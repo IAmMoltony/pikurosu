@@ -156,8 +156,8 @@ static void _renderBoard(void)
                     SDL_SetRenderDrawColor(_rend, 120, 120, 120, 255);
                 else
                     SDL_SetRenderDrawColor(_rend, 80, 80, 80, 255);
-                for (int i = -1; i <= 2; i++) {
-                    int cx = cellX + i;
+                for (int k = -1; k <= 2; k++) {
+                    int cx = cellX + k;
                     SDL_RenderDrawLine(_rend, cx + 6, cellY + 6, cx + CELL_SIZE - 8, cellY + CELL_SIZE - 8);
                     SDL_RenderDrawLine(_rend, cx + 6, cellY + CELL_SIZE - 8, cx + CELL_SIZE - 8, cellY + 6);
                 }

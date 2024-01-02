@@ -153,6 +153,30 @@ lib/libmtnlog/source/mtnlog.c.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Pikurosu.dir/build.make CMakeFiles/Pikurosu.dir/lib/libmtnlog/source/mtnlog.c.s
 .PHONY : lib/libmtnlog/source/mtnlog.c.s
 
+src/board.o: src/board.c.o
+.PHONY : src/board.o
+
+# target to build an object file
+src/board.c.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Pikurosu.dir/build.make CMakeFiles/Pikurosu.dir/src/board.c.o
+.PHONY : src/board.c.o
+
+src/board.i: src/board.c.i
+.PHONY : src/board.i
+
+# target to preprocess a source file
+src/board.c.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Pikurosu.dir/build.make CMakeFiles/Pikurosu.dir/src/board.c.i
+.PHONY : src/board.c.i
+
+src/board.s: src/board.c.s
+.PHONY : src/board.s
+
+# target to generate assembly for a file
+src/board.c.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Pikurosu.dir/build.make CMakeFiles/Pikurosu.dir/src/board.c.s
+.PHONY : src/board.c.s
+
 src/game.o: src/game.c.o
 .PHONY : src/game.o
 
@@ -213,6 +237,9 @@ help:
 	@echo "... lib/libmtnlog/source/mtnlog.o"
 	@echo "... lib/libmtnlog/source/mtnlog.i"
 	@echo "... lib/libmtnlog/source/mtnlog.s"
+	@echo "... src/board.o"
+	@echo "... src/board.i"
+	@echo "... src/board.s"
 	@echo "... src/game.o"
 	@echo "... src/game.i"
 	@echo "... src/game.s"

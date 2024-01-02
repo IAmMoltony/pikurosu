@@ -15,6 +15,7 @@ static int _mouseX = 0;
 static int _mouseY = 0;
 
 static Board _board;
+static BoardMetadata _boardMeta;
 
 static void _init(int argc, char **argv)
 {
@@ -47,7 +48,7 @@ static void _init(int argc, char **argv)
     }
 
     // init board
-    boardCreate(&_board, 5);
+    boardLoad(&_board, &_boardMeta, "levels/test.pikurosu");
 }
 
 static void _update(void)
@@ -70,7 +71,7 @@ static void _update(void)
             _mouseY = ev.motion.y;
             break;
         case SDL_MOUSEBUTTONDOWN:
-            _mouseX = ev.button.x;
+             _mouseX = ev.button.x;
             _mouseY = ev.button.y;
             if (ev.button.button == SDL_BUTTON_LEFT || ev.button.button == SDL_BUTTON_RIGHT) {
                 for (int i = 0; i < _board.size; i++) {
@@ -83,21 +84,30 @@ static void _update(void)
                             CellState oldState = boardGetCell(&_board, i, j);
 
                             Uint8 button = ev.button.button;
+                            bool didMove = false;
                             switch (button) {
                             case SDL_BUTTON_LEFT:
                                 if (oldState == CellState_Filled) {
                                     boardSetCell(&_board, i, j, CellState_Empty);
+                                    didMove = true;
                                 } else if (oldState == CellState_Empty) {
                                     boardSetCell(&_board, i, j, CellState_Filled);
+                                    didMove = true;
                                 }
                                 break;
                             case SDL_BUTTON_RIGHT:
                                 if (oldState == CellState_Cross) {
                                     boardSetCell(&_board, i, j, CellState_Empty);
+                                    didMove = true;
                                 } else if (oldState == CellState_Empty) {
                                     boardSetCell(&_board, i, j, CellState_Cross);
+                                    didMove = true;
                                 }
                                 break;
+                            }
+
+                            if (didMove && boardIsSolved(&_board)) {
+                                mtnlogMessageTag(LOG_INFO, "event", "Board is solved");
                             }
                         }
                     }
@@ -171,7 +181,11 @@ static void _render(void)
 
 static void _cleanup(void)
 {
-    mtnlogMessageTag(LOG_INFO, "cleanup", "Cleanup");
+    mtnlogMessageTag(LOG_INFO, "cleanup", "Cleanup: board");
+    boardDestroy(&_board);
+    boardMetaDestroy(&_boardMeta);
+
+    mtnlogMessageTag(LOG_INFO, "cleanup", "Cleanup: SDL");
     SDL_DestroyRenderer(_rend);
     SDL_DestroyWindow(_window);
     SDL_Quit();

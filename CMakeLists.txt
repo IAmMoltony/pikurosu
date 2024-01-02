@@ -11,7 +11,7 @@ include_directories(lib/libmtnlog/include)
 add_executable(Pikurosu ${SRC_FILES})
 
 if (CMAKE_C_COMPILER_ID MATCHES "GNU|Clang")
-    target_compile_options(Pikurosu PRIVATE -Wall -Wextra)
+    target_compile_options(Pikurosu PRIVATE -Wall -Wextra -g)
 elseif (MSVC)
     target_compile_options(Pikurosu PRIVATE /W4)
 endif ()

@@ -137,9 +137,14 @@ static void _renderBoard(void)
             SDL_Rect cellFilledRect = {cellX + 4, cellY + 4, CELL_SIZE - 8, CELL_SIZE - 8};
 
             bool hovering = (_mouseX > cellX && _mouseY > cellY && _mouseX < cellX + CELL_SIZE && _mouseY < cellY + CELL_SIZE);
+            bool hoveringOnlyX = (_mouseX > cellX && _mouseX < cellX + CELL_SIZE);
+            bool hoveringOnlyY = (_mouseY > cellY && _mouseY < cellY + CELL_SIZE);
+            bool mouseInBoard = (_mouseX > _boardX && _mouseY > _boardY && _mouseX < _boardX + _board.size * CELL_SIZE && _mouseY < _boardY + _board.size * CELL_SIZE);
 
             if (hovering)
                 SDL_SetRenderDrawColor(_rend, 230, 230, 230, 255);
+            else if ((hoveringOnlyX || hoveringOnlyY) && mouseInBoard)
+                SDL_SetRenderDrawColor(_rend, 160, 160, 160, 255);
             else
                 SDL_SetRenderDrawColor(_rend, 128, 128, 128, 255);
             SDL_RenderFillRect(_rend, &cellRect);

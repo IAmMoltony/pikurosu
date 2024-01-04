@@ -13,6 +13,7 @@ static SDL_Renderer *_rend = NULL;
 static bool _running = true;
 static int _mouseX = 0;
 static int _mouseY = 0;
+static GameState _gState = GameState_Game;
 
 static Board _board;
 static BoardMetadata _boardMeta;
@@ -82,45 +83,50 @@ static void _update(void)
         case SDL_MOUSEBUTTONDOWN:
              _mouseX = ev.button.x;
             _mouseY = ev.button.y;
-            if (ev.button.button == SDL_BUTTON_LEFT || ev.button.button == SDL_BUTTON_RIGHT) {
-                for (int i = 0; i < _board.size; i++) {
-                    for (int j = 0; j < _board.size; j++) {
-                        int cellX = i * CELL_SIZE + _boardX;
-                        int cellY = j * CELL_SIZE + _boardY;
-                        bool hovering = (_mouseX > cellX && _mouseY > cellY && _mouseX < cellX + CELL_SIZE && _mouseY < cellY + CELL_SIZE);
-                        if (hovering) {
-                            mtnlogMessageTag(LOG_INFO, "event", "Clicked on cell (%d,%d)", i, j);
-                            CellState oldState = boardGetCell(&_board, i, j);
 
-                            Uint8 button = ev.button.button;
-                            bool didMove = false;
-                            switch (button) {
-                            case SDL_BUTTON_LEFT:
-                                if (oldState == CellState_Filled) {
-                                    boardSetCell(&_board, i, j, CellState_Empty);
-                                    didMove = true;
-                                } else if (oldState == CellState_Empty) {
-                                    boardSetCell(&_board, i, j, CellState_Filled);
-                                    didMove = true;
-                                }
-                                break;
-                            case SDL_BUTTON_RIGHT:
-                                if (oldState == CellState_Cross) {
-                                    boardSetCell(&_board, i, j, CellState_Empty);
-                                    didMove = true;
-                                } else if (oldState == CellState_Empty) {
-                                    boardSetCell(&_board, i, j, CellState_Cross);
-                                    didMove = true;
-                                }
-                                break;
-                            }
+            switch (_gState) {
+            case GameState_Game:
+                if (ev.button.button == SDL_BUTTON_LEFT || ev.button.button == SDL_BUTTON_RIGHT) {
+                    for (int i = 0; i < _board.size; i++) {
+                        for (int j = 0; j < _board.size; j++) {
+                            int cellX = i * CELL_SIZE + _boardX;
+                            int cellY = j * CELL_SIZE + _boardY;
+                            bool hovering = (_mouseX > cellX && _mouseY > cellY && _mouseX < cellX + CELL_SIZE && _mouseY < cellY + CELL_SIZE);
+                            if (hovering) {
+                                mtnlogMessageTag(LOG_INFO, "event", "Clicked on cell (%d,%d)", i, j);
+                                CellState oldState = boardGetCell(&_board, i, j);
 
-                            if (didMove && boardIsSolved(&_board)) {
-                                mtnlogMessageTag(LOG_INFO, "event", "Board is solved");
+                                Uint8 button = ev.button.button;
+                                bool didMove = false;
+                                switch (button) {
+                                case SDL_BUTTON_LEFT:
+                                    if (oldState == CellState_Filled) {
+                                        boardSetCell(&_board, i, j, CellState_Empty);
+                                        didMove = true;
+                                    } else if (oldState == CellState_Empty) {
+                                        boardSetCell(&_board, i, j, CellState_Filled);
+                                        didMove = true;
+                                    }
+                                    break;
+                                case SDL_BUTTON_RIGHT:
+                                    if (oldState == CellState_Cross) {
+                                        boardSetCell(&_board, i, j, CellState_Empty);
+                                        didMove = true;
+                                    } else if (oldState == CellState_Empty) {
+                                        boardSetCell(&_board, i, j, CellState_Cross);
+                                        didMove = true;
+                                    }
+                                    break;
+                                }
+
+                                if (didMove && boardIsSolved(&_board)) {
+                                    mtnlogMessageTag(LOG_INFO, "event", "Board is solved");
+                                }
                             }
                         }
                     }
                 }
+                break;
             }
             break;
         }
@@ -187,7 +193,11 @@ static void _render(void)
     SDL_SetRenderDrawColor(_rend, 0, 0, 0, 255);
     SDL_RenderClear(_rend);
 
-    _renderBoard();
+    switch (_gState) {
+    case GameState_Game:
+        _renderBoard();
+        break;
+    }
 
     // put stuff to screen
     SDL_RenderPresent(_rend);

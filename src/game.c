@@ -5,8 +5,6 @@
 #include <stdbool.h>
 
 #define CELL_SIZE 32
-#define BOARD_X 100
-#define BOARD_Y 30
 
 static SDL_Window *_window = NULL;
 static SDL_Renderer *_rend = NULL;
@@ -16,6 +14,8 @@ static int _mouseY = 0;
 
 static Board _board;
 static BoardMetadata _boardMeta;
+static int _boardX = 100;
+static int _boardY = 30;
 
 static void _init(int argc, char **argv)
 {
@@ -76,8 +76,8 @@ static void _update(void)
             if (ev.button.button == SDL_BUTTON_LEFT || ev.button.button == SDL_BUTTON_RIGHT) {
                 for (int i = 0; i < _board.size; i++) {
                     for (int j = 0; j < _board.size; j++) {
-                        int cellX = i * CELL_SIZE + BOARD_X;
-                        int cellY = j * CELL_SIZE + BOARD_Y;
+                        int cellX = i * CELL_SIZE + _boardX;
+                        int cellY = j * CELL_SIZE + _boardY;
                         bool hovering = (_mouseX > cellX && _mouseY > cellY && _mouseX < cellX + CELL_SIZE && _mouseY < cellY + CELL_SIZE);
                         if (hovering) {
                             mtnlogMessageTag(LOG_INFO, "event", "Clicked on cell (%d,%d)", i, j);
@@ -122,8 +122,8 @@ static void _renderBoard(void)
 {
     for (int i = 0; i < _board.size; i++) {
         for (int j = 0; j < _board.size; j++) {
-            int cellX = i * CELL_SIZE + BOARD_X;
-            int cellY = j * CELL_SIZE + BOARD_Y;
+            int cellX = i * CELL_SIZE + _boardX;
+            int cellY = j * CELL_SIZE + _boardY;
             SDL_Rect cellRect = {cellX, cellY, CELL_SIZE, CELL_SIZE};
             SDL_Rect cellFilledRect = {cellX + 4, cellY + 4, CELL_SIZE - 8, CELL_SIZE - 8};
 

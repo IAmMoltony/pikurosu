@@ -5,6 +5,8 @@
 #include <stdbool.h>
 
 #define CELL_SIZE 32
+#define SCREEN_WIDTH 800
+#define SCREEN_HEIGHT 600
 
 static SDL_Window *_window = NULL;
 static SDL_Renderer *_rend = NULL;
@@ -19,7 +21,9 @@ static int _boardY = 30;
 
 static void _loadBoard(const char *name)
 {
-    boardLoad(&_board, &_boardMeta, "levels/test.pikurosu");
+    boardLoad(&_board, &_boardMeta, name);
+    _boardX = SCREEN_WIDTH / 2 - (_board.size * CELL_SIZE / 2);
+    _boardY = SCREEN_HEIGHT / 2 - (_board.size * CELL_SIZE / 2);
 }
 
 static void _init(int argc, char **argv)
@@ -39,7 +43,7 @@ static void _init(int argc, char **argv)
     mtnlogMessageTag(LOG_INFO, "init", "SDL initialized");
 
     // init window
-    _window = SDL_CreateWindow("Pikurosu", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 800, 600, 0);
+    _window = SDL_CreateWindow("Pikurosu", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, SCREEN_WIDTH, SCREEN_HEIGHT, 0);
     if (!_window) {
         mtnlogMessageTag(LOG_ERROR, "init", "Failed to create window: %s", SDL_GetError());
         return;

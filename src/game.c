@@ -17,6 +17,11 @@ static BoardMetadata _boardMeta;
 static int _boardX = 100;
 static int _boardY = 30;
 
+static void _loadBoard(const char *name)
+{
+    boardLoad(&_board, &_boardMeta, "levels/test.pikurosu");
+}
+
 static void _init(int argc, char **argv)
 {
     mtnlogInit(LOG_INFO, "pikurosu.log");
@@ -48,7 +53,7 @@ static void _init(int argc, char **argv)
     }
 
     // init board
-    boardLoad(&_board, &_boardMeta, "levels/test.pikurosu");
+    _loadBoard("levels/test.pikurosu");
 }
 
 static void _update(void)

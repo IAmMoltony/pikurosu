@@ -6,3 +6,4 @@ CMakeFiles/
 pikurosu.log
 pikurosu.cppcheck
 pikurosu-cppcheck-build-dir
+*.layout

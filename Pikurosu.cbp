@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CodeBlocks_project_file>
+	<FileVersion major="1" minor="6"/>
+	<Project>
+		<Option title="Pikurosu"/>
+		<Option makefile_is_custom="1"/>
+		<Option compiler="gcc"/>
+		<Option virtualFolders="CMake Files\;CMake Files\..\;CMake Files\..\..\;CMake Files\..\..\..\;CMake Files\..\..\..\..\;CMake Files\..\..\..\..\usr\;CMake Files\..\..\..\..\usr\lib\;CMake Files\..\..\..\..\usr\lib\cmake\;CMake Files\..\..\..\..\usr\lib\cmake\SDL2\;"/>
+		<Build>
+			<Target title="all">
+				<Option working_dir="/home/moltony/dev/pikurosu"/>
+				<Option type="4"/>
+				<MakeCommands>
+					<Build command="/usr/bin/make -f &quot;/home/moltony/dev/pikurosu/Makefile&quot;  VERBOSE=1 all"/>
+					<CompileFile command="/usr/bin/make -f &quot;/home/moltony/dev/pikurosu/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -f &quot;/home/moltony/dev/pikurosu/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -f &quot;/home/moltony/dev/pikurosu/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="Pikurosu">
+				<Option output="/home/moltony/dev/pikurosu/Pikurosu" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="/home/moltony/dev/pikurosu"/>
+				<Option object_output="./"/>
+				<Option type="1"/>
+				<Option compiler="gcc"/>
+				<Compiler>
+					<Add directory="/home/moltony/dev/pikurosu/inc"/>
+					<Add directory="/home/moltony/dev/pikurosu/lib/libmtnlog/include"/>
+					<Add directory="/usr/include/SDL2"/>
+				</Compiler>
+				<MakeCommands>
+					<Build command="/usr/bin/make -f &quot;/home/moltony/dev/pikurosu/Makefile&quot;  VERBOSE=1 Pikurosu"/>
+					<CompileFile command="/usr/bin/make -f &quot;/home/moltony/dev/pikurosu/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -f &quot;/home/moltony/dev/pikurosu/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -f &quot;/home/moltony/dev/pikurosu/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="Pikurosu/fast">
+				<Option output="/home/moltony/dev/pikurosu/Pikurosu" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="/home/moltony/dev/pikurosu"/>
+				<Option object_output="./"/>
+				<Option type="1"/>
+				<Option compiler="gcc"/>
+				<Compiler>
+					<Add directory="/home/moltony/dev/pikurosu/inc"/>
+					<Add directory="/home/moltony/dev/pikurosu/lib/libmtnlog/include"/>
+					<Add directory="/usr/include/SDL2"/>
+				</Compiler>
+				<MakeCommands>
+					<Build command="/usr/bin/make -f &quot;/home/moltony/dev/pikurosu/Makefile&quot;  VERBOSE=1 Pikurosu/fast"/>
+					<CompileFile command="/usr/bin/make -f &quot;/home/moltony/dev/pikurosu/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -f &quot;/home/moltony/dev/pikurosu/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -f &quot;/home/moltony/dev/pikurosu/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="edit_cache">
+				<Option working_dir="/home/moltony/dev/pikurosu"/>
+				<Option type="4"/>
+				<MakeCommands>
+					<Build command="/usr/bin/make -f &quot;/home/moltony/dev/pikurosu/Makefile&quot;  VERBOSE=1 edit_cache"/>
+					<CompileFile command="/usr/bin/make -f &quot;/home/moltony/dev/pikurosu/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -f &quot;/home/moltony/dev/pikurosu/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -f &quot;/home/moltony/dev/pikurosu/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="rebuild_cache">
+				<Option working_dir="/home/moltony/dev/pikurosu"/>
+				<Option type="4"/>
+				<MakeCommands>
+					<Build command="/usr/bin/make -f &quot;/home/moltony/dev/pikurosu/Makefile&quot;  VERBOSE=1 rebuild_cache"/>
+					<CompileFile command="/usr/bin/make -f &quot;/home/moltony/dev/pikurosu/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -f &quot;/home/moltony/dev/pikurosu/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -f &quot;/home/moltony/dev/pikurosu/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+		</Build>
+		<Unit filename="/home/moltony/dev/pikurosu/lib/libmtnlog/source/mtnlog.c">
+			<Option target="Pikurosu"/>
+		</Unit>
+		<Unit filename="/home/moltony/dev/pikurosu/src/board.c">
+			<Option target="Pikurosu"/>
+		</Unit>
+		<Unit filename="/home/moltony/dev/pikurosu/src/game.c">
+			<Option target="Pikurosu"/>
+		</Unit>
+		<Unit filename="/home/moltony/dev/pikurosu/src/main.c">
+			<Option target="Pikurosu"/>
+		</Unit>
+		<Unit filename="/home/moltony/dev/pikurosu/CMakeLists.txt">
+			<Option virtualFolder="CMake Files\"/>
+		</Unit>
+		<Unit filename="/home/moltony/dev/pikurosu/../../../../usr/lib/cmake/SDL2/SDL2Config.cmake">
+			<Option virtualFolder="CMake Files\..\..\..\..\usr\lib\cmake\SDL2\"/>
+		</Unit>
+		<Unit filename="/home/moltony/dev/pikurosu/../../../../usr/lib/cmake/SDL2/SDL2ConfigVersion.cmake">
+			<Option virtualFolder="CMake Files\..\..\..\..\usr\lib\cmake\SDL2\"/>
+		</Unit>
+		<Unit filename="/home/moltony/dev/pikurosu/../../../../usr/lib/cmake/SDL2/SDL2Targets-noconfig.cmake">
+			<Option virtualFolder="CMake Files\..\..\..\..\usr\lib\cmake\SDL2\"/>
+		</Unit>
+		<Unit filename="/home/moltony/dev/pikurosu/../../../../usr/lib/cmake/SDL2/SDL2Targets.cmake">
+			<Option virtualFolder="CMake Files\..\..\..\..\usr\lib\cmake\SDL2\"/>
+		</Unit>
+		<Unit filename="/home/moltony/dev/pikurosu/../../../../usr/lib/cmake/SDL2/SDL2mainTargets-noconfig.cmake">
+			<Option virtualFolder="CMake Files\..\..\..\..\usr\lib\cmake\SDL2\"/>
+		</Unit>
+		<Unit filename="/home/moltony/dev/pikurosu/../../../../usr/lib/cmake/SDL2/SDL2mainTargets.cmake">
+			<Option virtualFolder="CMake Files\..\..\..\..\usr\lib\cmake\SDL2\"/>
+		</Unit>
+		<Unit filename="/home/moltony/dev/pikurosu/../../../../usr/lib/cmake/SDL2/SDL2testTargets-noconfig.cmake">
+			<Option virtualFolder="CMake Files\..\..\..\..\usr\lib\cmake\SDL2\"/>
+		</Unit>
+		<Unit filename="/home/moltony/dev/pikurosu/../../../../usr/lib/cmake/SDL2/SDL2testTargets.cmake">
+			<Option virtualFolder="CMake Files\..\..\..\..\usr\lib\cmake\SDL2\"/>
+		</Unit>
+		<Unit filename="/home/moltony/dev/pikurosu/../../../../usr/lib/cmake/SDL2/sdlfind.cmake">
+			<Option virtualFolder="CMake Files\..\..\..\..\usr\lib\cmake\SDL2\"/>
+		</Unit>
+	</Project>
+</CodeBlocks_project_file>

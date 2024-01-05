@@ -140,6 +140,8 @@ static void _handleEvents(void)
             switch (_gState) {
             case GameState_Game:
                 if (ev.button.button == SDL_BUTTON_LEFT || ev.button.button == SDL_BUTTON_RIGHT) {
+                    if (_boardSolved)
+                        break; // can't interact with board after solved
                     for (int i = 0; i < _board.size; i++) {
                         for (int j = 0; j < _board.size; j++) {
                             int cellX = i * CELL_SIZE + _boardX;

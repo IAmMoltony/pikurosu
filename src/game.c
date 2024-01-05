@@ -82,8 +82,9 @@ static bool _createRenderer(void)
     _rend = SDL_CreateRenderer(_window, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
     if (!_rend) {
         mtnlogMessageTag(LOG_ERROR, "init", "Failed to create renderer: %s", SDL_GetError());
-        return;
+        return false;
     }
+    return true;
 }
 
 static void _init(int argc, char **argv)
@@ -241,6 +242,22 @@ static void _renderBoard(void)
     }
 }
 
+static void _drawTimeText(void)
+{
+    SDL_Color color;
+    color.a = 255;
+    if (_boardSolved) {
+        color.r = 0;
+        color.g = 210;
+        color.b = 0;
+    } else {
+        color.r = 255;
+        color.g = 255;
+        color.b = 255;
+    }
+    FC_DrawColor(_font, _rend, 10, 10, color, "Time: %.2f s", (float)_time / 1000);
+}
+
 static void _render(void)
 {
     // clear screen
@@ -250,7 +267,7 @@ static void _render(void)
     switch (_gState) {
     case GameState_Game:
         _renderBoard();
-        FC_Draw(_font, _rend, 10, 10, "Hello, world!");
+        _drawTimeText();
         break;
     }
 

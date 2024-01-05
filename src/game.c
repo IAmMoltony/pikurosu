@@ -113,8 +113,9 @@ static void _init(int argc, char **argv)
     }
 }
 
-static void _update(void)
+static void _handleEvents(void)
 {
+
     SDL_Event ev;
     while (SDL_PollEvent(&ev)) {
         switch (ev.type) {
@@ -186,6 +187,11 @@ static void _update(void)
             break;
         }
     }
+}
+
+static void _update(void)
+{
+    _handleEvents();
 }
 
 static void _renderBoard(void)

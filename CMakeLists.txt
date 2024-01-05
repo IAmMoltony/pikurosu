@@ -3,7 +3,8 @@ cmake_minimum_required(VERSION 3.0)
 project(Pikurosu)
 
 find_package(SDL2 REQUIRED)
-include_directories(${SDL2_INCLUDE_DIRECTORIES})
+find_package(SDL2_ttf REQUIRED)
+include_directories(${SDL2_INCLUDE_DIRS})
 
 find_package(Threads REQUIRED)
 
@@ -12,10 +13,7 @@ include_directories(inc)
 include_directories(lib/libmtnlog/include)
 add_executable(Pikurosu ${SRC_FILES})
 
-if (CMAKE_C_COMPILER_ID MATCHES "GNU|Clang")
-    target_compile_options(Pikurosu PRIVATE -Wall -Wextra -g)
-elseif (MSVC)
-    target_compile_options(Pikurosu PRIVATE /W4)
-endif ()
+target_compile_options(Pikurosu PRIVATE -Wall -Wextra -g)
+target_link_options(Pikurosu PRIVATE -lSDL2_ttf)
 
-target_link_libraries(Pikurosu ${SDL2_LIBRARIES} Threads::Threads)
+target_link_libraries(Pikurosu ${SDL2_LIBRARIES} ${SDL2_TTF_LIBRARIES} Threads::Threads)

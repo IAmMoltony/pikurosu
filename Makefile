@@ -225,6 +225,30 @@ src/main.c.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Pikurosu.dir/build.make CMakeFiles/Pikurosu.dir/src/main.c.s
 .PHONY : src/main.c.s
 
+src/text.o: src/text.c.o
+.PHONY : src/text.o
+
+# target to build an object file
+src/text.c.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Pikurosu.dir/build.make CMakeFiles/Pikurosu.dir/src/text.c.o
+.PHONY : src/text.c.o
+
+src/text.i: src/text.c.i
+.PHONY : src/text.i
+
+# target to preprocess a source file
+src/text.c.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Pikurosu.dir/build.make CMakeFiles/Pikurosu.dir/src/text.c.i
+.PHONY : src/text.c.i
+
+src/text.s: src/text.c.s
+.PHONY : src/text.s
+
+# target to generate assembly for a file
+src/text.c.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Pikurosu.dir/build.make CMakeFiles/Pikurosu.dir/src/text.c.s
+.PHONY : src/text.c.s
+
 # Help Target
 help:
 	@echo "The following are some of the valid targets for this Makefile:"
@@ -246,6 +270,9 @@ help:
 	@echo "... src/main.o"
 	@echo "... src/main.i"
 	@echo "... src/main.s"
+	@echo "... src/text.o"
+	@echo "... src/text.i"
+	@echo "... src/text.s"
 .PHONY : help
 
 

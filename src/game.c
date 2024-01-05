@@ -1,6 +1,7 @@
 #include "game.h"
 #include "mtnlog.h"
 #include "board.h"
+#include "text.h"
 #include <SDL2/SDL.h>
 #include <stdbool.h>
 #include <unistd.h>
@@ -74,6 +75,11 @@ static void _init(int argc, char **argv)
     _rend = SDL_CreateRenderer(_window, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
     if (!_rend) {
         mtnlogMessageTag(LOG_ERROR, "init", "Failed to create renderer: %s", SDL_GetError());
+        return;
+    }
+
+    // init text
+    if (!textInit()) {
         return;
     }
 

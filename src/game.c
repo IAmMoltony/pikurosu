@@ -3,6 +3,8 @@
 #include "board.h"
 #include <SDL2/SDL.h>
 #include <stdbool.h>
+#include <unistd.h>
+#include <pthread.h>
 
 #define CELL_SIZE 32
 #define SCREEN_WIDTH 800
@@ -17,8 +19,26 @@ static GameState _gState = GameState_Game;
 
 static Board _board;
 static BoardMetadata _boardMeta;
+static bool _boardSolved = false;
 static int _boardX = 100;
 static int _boardY = 30;
+static int _time = 0;
+static bool _incTime = true;
+static pthread_t _incTimeThread;
+static bool _incTaskRunning = true;
+
+static void *_timeIncrementTask(void *arg)
+{
+    (void)arg;
+    while (true) {
+        if (_incTime)
+            _time++;
+        usleep(1000);
+        if (!_incTaskRunning)
+            break;
+    }
+    return NULL;
+}
 
 static void _loadBoard(const char *name)
 {
@@ -59,6 +79,13 @@ static void _init(int argc, char **argv)
 
     // init board
     _loadBoard("levels/test.pikurosu");
+
+    // start time increment task
+    int incTaskCode = pthread_create(&_incTimeThread, NULL, _timeIncrementTask, NULL);
+    if (incTaskCode != 0) {
+        mtnlogMessageTag(LOG_ERROR, "init", "Failed to create time increment thread (error %d)", incTaskCode);
+        return;
+    }
 }
 
 static void _update(void)
@@ -121,6 +148,9 @@ static void _update(void)
 
                                 if (didMove && boardIsSolved(&_board)) {
                                     mtnlogMessageTag(LOG_INFO, "event", "Board is solved");
+                                    _boardSolved = true;
+                                    _incTime = false;
+                                    mtnlogMessageTag(LOG_INFO, "event", "Solve time: %d ms (%.2f s)", _time, (float)_time / 1000);
                                 }
                             }
                         }
@@ -208,6 +238,10 @@ static void _cleanup(void)
     mtnlogMessageTag(LOG_INFO, "cleanup", "Cleanup: board");
     boardDestroy(&_board);
     boardMetaDestroy(&_boardMeta);
+
+    mtnlogMessageTag(LOG_INFO, "cleanup", "Cleanup: stopping threads");
+    _incTaskRunning = false;
+    pthread_join(_incTimeThread, NULL);
 
     mtnlogMessageTag(LOG_INFO, "cleanup", "Cleanup: SDL");
     SDL_DestroyRenderer(_rend);

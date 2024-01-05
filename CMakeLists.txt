@@ -5,6 +5,8 @@ project(Pikurosu)
 find_package(SDL2 REQUIRED)
 include_directories(${SDL2_INCLUDE_DIRECTORIES})
 
+find_package(Threads REQUIRED)
+
 file(GLOB SRC_FILES src/*.c lib/libmtnlog/source/*.c)
 include_directories(inc)
 include_directories(lib/libmtnlog/include)
@@ -16,4 +18,4 @@ elseif (MSVC)
     target_compile_options(Pikurosu PRIVATE /W4)
 endif ()
 
-target_link_libraries(Pikurosu ${SDL2_LIBRARIES})
+target_link_libraries(Pikurosu ${SDL2_LIBRARIES} Threads::Threads)

@@ -248,7 +248,7 @@ static void _renderBoard(void)
     }
 }
 
-static void _drawTimeText(void)
+static void _renderTimeText(void)
 {
     SDL_Color color;
     color.a = 255;
@@ -264,6 +264,14 @@ static void _drawTimeText(void)
     FC_DrawColor(_font, _rend, 10, 10, color, "Time: %.2f s", (float)_time / 1000);
 }
 
+static void _renderBoardMeta(void)
+{
+    FC_Scale scale;
+    scale.x = 0.5f;
+    scale.y = 0.5f;
+    FC_DrawScale(_font, _rend, 10, SCREEN_HEIGHT - 22, scale, "%s by %s", _boardMeta.name, _boardMeta.author);
+}
+
 static void _render(void)
 {
     // clear screen
@@ -273,7 +281,8 @@ static void _render(void)
     switch (_gState) {
     case GameState_Game:
         _renderBoard();
-        _drawTimeText();
+        _renderTimeText();
+        _renderBoardMeta();
         break;
     }
 

@@ -49,36 +49,52 @@ static void _loadBoard(const char *name)
     _boardY = SCREEN_HEIGHT / 2 - (_board.size * CELL_SIZE / 2);
 }
 
-static void _init(int argc, char **argv)
+static void _parseArgs(int argc, char **argv)
 {
-    mtnlogInit(LOG_INFO, "pikurosu.log");
-    mtnlogColor(true);
-
-    // print args
     mtnlogMessageTag(LOG_INFO, "init", "%d arguments", argc);
     for (int i = 0; i < argc; i++)
         mtnlogMessageTag(LOG_INFO, "init", "Argument #%d: %s", i + 1, argv[i]);
+}
 
-    // init SDL
+static bool _sdlInit(void)
+{
     if (SDL_Init(SDL_INIT_EVERYTHING) < 0) {
-        mtnlogMessageTag(LOG_ERROR, "init", "Failed to init SDL2: %s", SDL_GetError());
-        return;
+        mtnlogMessageTag(LOG_ERROR, "init", "Failed to init SDL: %s", SDL_GetError());
+        return false;
     }
     mtnlogMessageTag(LOG_INFO, "init", "SDL initialized");
+    return true;
+}
 
-    // init window
+static bool _createWindow(void)
+{
     _window = SDL_CreateWindow("Pikurosu", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, SCREEN_WIDTH, SCREEN_HEIGHT, 0);
     if (!_window) {
         mtnlogMessageTag(LOG_ERROR, "init", "Failed to create window: %s", SDL_GetError());
-        return;
+        return false;
     }
+    mtnlogMessageTag(LOG_INFO, "init", "Created window");
+    return true;
+}
 
-    // init renderer
+static bool _createRenderer(void)
+{
     _rend = SDL_CreateRenderer(_window, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
     if (!_rend) {
         mtnlogMessageTag(LOG_ERROR, "init", "Failed to create renderer: %s", SDL_GetError());
         return;
     }
+}
+
+static void _init(int argc, char **argv)
+{
+    mtnlogInit(LOG_INFO, "pikurosu.log");
+    mtnlogColor(true);
+
+    _parseArgs(argc, argv);
+
+    if (!_sdlInit() || !_createWindow() || !_createRenderer())
+        return;
 
     // init board
     _loadBoard("levels/test.pikurosu");

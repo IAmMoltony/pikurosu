@@ -1,6 +1,7 @@
 #include "game.h"
 #include "mtnlog.h"
 #include "board.h"
+#include "hints.h"
 #include "SDL_FontCache.h"
 #include <SDL2/SDL.h>
 #include <stdbool.h>
@@ -21,6 +22,7 @@ static FC_Font *_font;
 
 static Board _board;
 static BoardMetadata _boardMeta;
+static BoardHints _hints;
 static bool _boardSolved = false;
 static int _boardX = 100;
 static int _boardY = 30;
@@ -45,6 +47,7 @@ static void *_timeIncrementTask(void *arg)
 static void _loadBoard(const char *name)
 {
     boardLoad(&_board, &_boardMeta, name);
+    hintsCreate(&_hints, _board.size);
     _boardX = SCREEN_WIDTH / 2 - (_board.size * CELL_SIZE / 2);
     _boardY = SCREEN_HEIGHT / 2 - (_board.size * CELL_SIZE / 2);
 }
@@ -297,6 +300,7 @@ static void _cleanup(void)
     mtnlogMessageTag(LOG_INFO, "cleanup", "Destroying board");
     boardDestroy(&_board);
     boardMetaDestroy(&_boardMeta);
+    hintsDestroy(&_hints);
 
     mtnlogMessageTag(LOG_INFO, "cleanup", "Stopping threads");
     _incTaskRunning = false;

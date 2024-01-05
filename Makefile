@@ -225,6 +225,30 @@ src/game.c.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Pikurosu.dir/build.make CMakeFiles/Pikurosu.dir/src/game.c.s
 .PHONY : src/game.c.s
 
+src/hints.o: src/hints.c.o
+.PHONY : src/hints.o
+
+# target to build an object file
+src/hints.c.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Pikurosu.dir/build.make CMakeFiles/Pikurosu.dir/src/hints.c.o
+.PHONY : src/hints.c.o
+
+src/hints.i: src/hints.c.i
+.PHONY : src/hints.i
+
+# target to preprocess a source file
+src/hints.c.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Pikurosu.dir/build.make CMakeFiles/Pikurosu.dir/src/hints.c.i
+.PHONY : src/hints.c.i
+
+src/hints.s: src/hints.c.s
+.PHONY : src/hints.s
+
+# target to generate assembly for a file
+src/hints.c.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Pikurosu.dir/build.make CMakeFiles/Pikurosu.dir/src/hints.c.s
+.PHONY : src/hints.c.s
+
 src/main.o: src/main.c.o
 .PHONY : src/main.o
 
@@ -270,6 +294,9 @@ help:
 	@echo "... src/game.o"
 	@echo "... src/game.i"
 	@echo "... src/game.s"
+	@echo "... src/hints.o"
+	@echo "... src/hints.i"
+	@echo "... src/hints.s"
 	@echo "... src/main.o"
 	@echo "... src/main.i"
 	@echo "... src/main.s"

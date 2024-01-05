@@ -15,6 +15,6 @@ include_directories(lib/SDL_FontCache)
 add_executable(Pikurosu ${SRC_FILES})
 
 target_compile_options(Pikurosu PRIVATE -Wall -Wextra -g)
-target_link_options(Pikurosu PRIVATE -lSDL2_ttf)
+target_link_options(Pikurosu PRIVATE -lSDL2_ttf -lm)
 
 target_link_libraries(Pikurosu ${SDL2_LIBRARIES} ${SDL2_TTF_LIBRARIES} Threads::Threads)

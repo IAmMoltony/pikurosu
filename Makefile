@@ -129,6 +129,30 @@ Pikurosu/fast:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Pikurosu.dir/build.make CMakeFiles/Pikurosu.dir/build
 .PHONY : Pikurosu/fast
 
+lib/SDL_FontCache/SDL_FontCache.o: lib/SDL_FontCache/SDL_FontCache.c.o
+.PHONY : lib/SDL_FontCache/SDL_FontCache.o
+
+# target to build an object file
+lib/SDL_FontCache/SDL_FontCache.c.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Pikurosu.dir/build.make CMakeFiles/Pikurosu.dir/lib/SDL_FontCache/SDL_FontCache.c.o
+.PHONY : lib/SDL_FontCache/SDL_FontCache.c.o
+
+lib/SDL_FontCache/SDL_FontCache.i: lib/SDL_FontCache/SDL_FontCache.c.i
+.PHONY : lib/SDL_FontCache/SDL_FontCache.i
+
+# target to preprocess a source file
+lib/SDL_FontCache/SDL_FontCache.c.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Pikurosu.dir/build.make CMakeFiles/Pikurosu.dir/lib/SDL_FontCache/SDL_FontCache.c.i
+.PHONY : lib/SDL_FontCache/SDL_FontCache.c.i
+
+lib/SDL_FontCache/SDL_FontCache.s: lib/SDL_FontCache/SDL_FontCache.c.s
+.PHONY : lib/SDL_FontCache/SDL_FontCache.s
+
+# target to generate assembly for a file
+lib/SDL_FontCache/SDL_FontCache.c.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Pikurosu.dir/build.make CMakeFiles/Pikurosu.dir/lib/SDL_FontCache/SDL_FontCache.c.s
+.PHONY : lib/SDL_FontCache/SDL_FontCache.c.s
+
 lib/libmtnlog/source/mtnlog.o: lib/libmtnlog/source/mtnlog.c.o
 .PHONY : lib/libmtnlog/source/mtnlog.o
 
@@ -225,30 +249,6 @@ src/main.c.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Pikurosu.dir/build.make CMakeFiles/Pikurosu.dir/src/main.c.s
 .PHONY : src/main.c.s
 
-src/text.o: src/text.c.o
-.PHONY : src/text.o
-
-# target to build an object file
-src/text.c.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/Pikurosu.dir/build.make CMakeFiles/Pikurosu.dir/src/text.c.o
-.PHONY : src/text.c.o
-
-src/text.i: src/text.c.i
-.PHONY : src/text.i
-
-# target to preprocess a source file
-src/text.c.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/Pikurosu.dir/build.make CMakeFiles/Pikurosu.dir/src/text.c.i
-.PHONY : src/text.c.i
-
-src/text.s: src/text.c.s
-.PHONY : src/text.s
-
-# target to generate assembly for a file
-src/text.c.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/Pikurosu.dir/build.make CMakeFiles/Pikurosu.dir/src/text.c.s
-.PHONY : src/text.c.s
-
 # Help Target
 help:
 	@echo "The following are some of the valid targets for this Makefile:"
@@ -258,6 +258,9 @@ help:
 	@echo "... edit_cache"
 	@echo "... rebuild_cache"
 	@echo "... Pikurosu"
+	@echo "... lib/SDL_FontCache/SDL_FontCache.o"
+	@echo "... lib/SDL_FontCache/SDL_FontCache.i"
+	@echo "... lib/SDL_FontCache/SDL_FontCache.s"
 	@echo "... lib/libmtnlog/source/mtnlog.o"
 	@echo "... lib/libmtnlog/source/mtnlog.i"
 	@echo "... lib/libmtnlog/source/mtnlog.s"
@@ -270,9 +273,6 @@ help:
 	@echo "... src/main.o"
 	@echo "... src/main.i"
 	@echo "... src/main.s"
-	@echo "... src/text.o"
-	@echo "... src/text.i"
-	@echo "... src/text.s"
 .PHONY : help
 
 

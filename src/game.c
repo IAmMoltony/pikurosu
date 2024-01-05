@@ -1,7 +1,7 @@
 #include "game.h"
 #include "mtnlog.h"
 #include "board.h"
-#include "text.h"
+#include "SDL_FontCache.h"
 #include <SDL2/SDL.h>
 #include <stdbool.h>
 #include <unistd.h>
@@ -17,6 +17,7 @@ static bool _running = true;
 static int _mouseX = 0;
 static int _mouseY = 0;
 static GameState _gState = GameState_Game;
+static FC_Font *_font;
 
 static Board _board;
 static BoardMetadata _boardMeta;
@@ -51,6 +52,7 @@ static void _loadBoard(const char *name)
 static void _init(int argc, char **argv)
 {
     mtnlogInit(LOG_INFO, "pikurosu.log");
+    mtnlogColor(true);
 
     // print args
     mtnlogMessageTag(LOG_INFO, "init", "%d arguments", argc);
@@ -78,13 +80,13 @@ static void _init(int argc, char **argv)
         return;
     }
 
-    // init text
-    if (!textInit()) {
-        return;
-    }
-
     // init board
     _loadBoard("levels/test.pikurosu");
+
+    // load font
+    _font = FC_CreateFont();
+    FC_LoadFont(_font, _rend, "fonts/static/NotoSans-Regular.ttf", 24, FC_MakeColor(255, 255, 255, 255), TTF_STYLE_NORMAL); 
+    mtnlogMessageTag(LOG_INFO, "init", "Loaded font");
 
     // start time increment task
     int incTaskCode = pthread_create(&_incTimeThread, NULL, _timeIncrementTask, NULL);
@@ -232,6 +234,7 @@ static void _render(void)
     switch (_gState) {
     case GameState_Game:
         _renderBoard();
+        FC_Draw(_font, _rend, 10, 10, "Hello, world!");
         break;
     }
 
@@ -241,15 +244,18 @@ static void _render(void)
 
 static void _cleanup(void)
 {
-    mtnlogMessageTag(LOG_INFO, "cleanup", "Cleanup: board");
+    mtnlogMessageTag(LOG_INFO, "cleanup", "Destroying board");
     boardDestroy(&_board);
     boardMetaDestroy(&_boardMeta);
 
-    mtnlogMessageTag(LOG_INFO, "cleanup", "Cleanup: stopping threads");
+    mtnlogMessageTag(LOG_INFO, "cleanup", "Stopping threads");
     _incTaskRunning = false;
     pthread_join(_incTimeThread, NULL);
 
-    mtnlogMessageTag(LOG_INFO, "cleanup", "Cleanup: SDL");
+    mtnlogMessageTag(LOG_INFO, "cleanup", "Unloading fonts");
+    FC_FreeFont(_font);
+
+    mtnlogMessageTag(LOG_INFO, "cleanup", "SDL cleanup");
     SDL_DestroyRenderer(_rend);
     SDL_DestroyWindow(_window);
     SDL_Quit();

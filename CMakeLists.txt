@@ -8,9 +8,10 @@ include_directories(${SDL2_INCLUDE_DIRS})
 
 find_package(Threads REQUIRED)
 
-file(GLOB SRC_FILES src/*.c lib/libmtnlog/source/*.c)
+file(GLOB SRC_FILES src/*.c lib/libmtnlog/source/*.c lib/SDL_FontCache/*.c)
 include_directories(inc)
 include_directories(lib/libmtnlog/include)
+include_directories(lib/SDL_FontCache)
 add_executable(Pikurosu ${SRC_FILES})
 
 target_compile_options(Pikurosu PRIVATE -Wall -Wextra -g)

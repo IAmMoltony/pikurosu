@@ -1,3 +1,6 @@
 [submodule "lib/libmtnlog"]
 	path = lib/libmtnlog
 	url = https://github.com/IAmMoltony/libmtnlog
+[submodule "lib/SDL_FontCache"]
+	path = lib/SDL_FontCache
+	url = https://github.com/grimfang4/SDL_FontCache

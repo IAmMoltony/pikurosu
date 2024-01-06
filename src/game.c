@@ -2,6 +2,7 @@
 #include "mtnlog.h"
 #include "board.h"
 #include "hints.h"
+#include "args.h"
 #include "SDL_FontCache.h"
 #include <SDL2/SDL.h>
 #include <stdbool.h>
@@ -9,8 +10,6 @@
 #include <pthread.h>
 
 #define CELL_SIZE 32
-#define SCREEN_WIDTH 800
-#define SCREEN_HEIGHT 600
 
 static SDL_Window *_window = NULL;
 static SDL_Renderer *_rend = NULL;
@@ -19,6 +18,8 @@ static int _mouseX = 0;
 static int _mouseY = 0;
 static GameState _gState = GameState_Game;
 static FC_Font *_font;
+static int _screenWidth = 0;
+static int _screenHeight = 0;
 
 static Board _board;
 static BoardMetadata _boardMeta;
@@ -48,15 +49,8 @@ static void _loadBoard(const char *name)
 {
     boardLoad(&_board, &_boardMeta, name);
     hintsCreate(&_hints, _board.size);
-    _boardX = SCREEN_WIDTH / 2 - (_board.size * CELL_SIZE / 2);
-    _boardY = SCREEN_HEIGHT / 2 - (_board.size * CELL_SIZE / 2);
-}
-
-static void _parseArgs(int argc, char **argv)
-{
-    mtnlogMessageTag(LOG_INFO, "init", "%d arguments", argc);
-    for (int i = 0; i < argc; i++)
-        mtnlogMessageTag(LOG_INFO, "init", "Argument #%d: %s", i + 1, argv[i]);
+    _boardX = _screenWidth / 2 - (_board.size * CELL_SIZE / 2);
+    _boardY = _screenHeight / 2 - (_board.size * CELL_SIZE / 2);
 }
 
 static bool _sdlInit(void)
@@ -71,7 +65,7 @@ static bool _sdlInit(void)
 
 static bool _createWindow(void)
 {
-    _window = SDL_CreateWindow("Pikurosu", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, SCREEN_WIDTH, SCREEN_HEIGHT, 0);
+    _window = SDL_CreateWindow("Pikurosu", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, _screenWidth, _screenHeight, 0);
     if (!_window) {
         mtnlogMessageTag(LOG_ERROR, "init", "Failed to create window: %s", SDL_GetError());
         return false;
@@ -90,18 +84,22 @@ static bool _createRenderer(void)
     return true;
 }
 
-static void _init(int argc, char **argv)
+static bool _init(int argc, char **argv)
 {
+    if (argsParse(argc, argv) != ArgParseResult_OK)
+        return false;
+
+    _screenWidth = argsGetScreenWidth();
+    _screenHeight = argsGetScreenHeight();
+
     mtnlogInit(LOG_INFO, "pikurosu.log");
     mtnlogColor(true);
 
-    _parseArgs(argc, argv);
-
     if (!_sdlInit() || !_createWindow() || !_createRenderer())
-        return;
+        return false;
 
     // init board
-    _loadBoard("levels/test.pikurosu");
+    _loadBoard(argsGetLevelName());
 
     // load font
     _font = FC_CreateFont();
@@ -112,8 +110,10 @@ static void _init(int argc, char **argv)
     int incTaskCode = pthread_create(&_incTimeThread, NULL, _timeIncrementTask, NULL);
     if (incTaskCode != 0) {
         mtnlogMessageTag(LOG_ERROR, "init", "Failed to create time increment thread (error %d)", incTaskCode);
-        return;
+        return false;
     }
+
+    return true;
 }
 
 static void _handleEvents(void)
@@ -274,7 +274,7 @@ static void _renderBoardMeta(void)
     FC_Scale scale;
     scale.x = 0.5f;
     scale.y = 0.5f;
-    FC_DrawScale(_font, _rend, 10, SCREEN_HEIGHT - 22, scale, "%s by %s", _boardMeta.name, _boardMeta.author);
+    FC_DrawScale(_font, _rend, 10, _screenHeight - 22, scale, "%s by %s", _boardMeta.name, _boardMeta.author);
 }
 
 static void _render(void)
@@ -302,6 +302,9 @@ static void _cleanup(void)
     boardMetaDestroy(&_boardMeta);
     hintsDestroy(&_hints);
 
+    mtnlogMessageTag(LOG_INFO, "cleanup", "Doing args cleanup");
+    argsCleanup();
+
     mtnlogMessageTag(LOG_INFO, "cleanup", "Stopping threads");
     _incTaskRunning = false;
     pthread_join(_incTimeThread, NULL);
@@ -317,7 +320,8 @@ static void _cleanup(void)
 
 void gameRun(int argc, char **argv)
 {
-    _init(argc, argv);
+    if (!_init(argc, argv))
+        return;
     while (_running) {
         _update();
         _render();

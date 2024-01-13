@@ -8,3 +8,4 @@ pikurosu.cppcheck
 pikurosu-cppcheck-build-dir
 Makefile
 Session.vim
+build/

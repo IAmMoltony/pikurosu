@@ -56,10 +56,10 @@ static void _loadBoard(const char *name)
 static bool _sdlInit(void)
 {
     if (SDL_Init(SDL_INIT_EVERYTHING) < 0) {
-        mtnlogMessageTag(LOG_ERROR, "init", "Failed to init SDL: %s", SDL_GetError());
+        mtnlogMessageTag(MTNLOG_ERROR, "init", "Failed to init SDL: %s", SDL_GetError());
         return false;
     }
-    mtnlogMessageTag(LOG_INFO, "init", "SDL initialized");
+    mtnlogMessageTag(MTNLOG_INFO, "init", "SDL initialized");
     return true;
 }
 
@@ -67,10 +67,10 @@ static bool _createWindow(void)
 {
     _window = SDL_CreateWindow("Pikurosu", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, _screenWidth, _screenHeight, 0);
     if (!_window) {
-        mtnlogMessageTag(LOG_ERROR, "init", "Failed to create window: %s", SDL_GetError());
+        mtnlogMessageTag(MTNLOG_ERROR, "init", "Failed to create window: %s", SDL_GetError());
         return false;
     }
-    mtnlogMessageTag(LOG_INFO, "init", "Created window");
+    mtnlogMessageTag(MTNLOG_INFO, "init", "Created window");
     return true;
 }
 
@@ -78,7 +78,7 @@ static bool _createRenderer(void)
 {
     _rend = SDL_CreateRenderer(_window, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
     if (!_rend) {
-        mtnlogMessageTag(LOG_ERROR, "init", "Failed to create renderer: %s", SDL_GetError());
+        mtnlogMessageTag(MTNLOG_ERROR, "init", "Failed to create renderer: %s", SDL_GetError());
         return false;
     }
     return true;
@@ -92,7 +92,7 @@ static bool _init(int argc, char **argv)
     _screenWidth = argsGetScreenWidth();
     _screenHeight = argsGetScreenHeight();
 
-    mtnlogInit(LOG_INFO, "pikurosu.log");
+    mtnlogInit(MTNLOG_INFO, "pikurosu.log");
     mtnlogColor(true);
 
     if (!_sdlInit() || !_createWindow() || !_createRenderer())
@@ -104,12 +104,12 @@ static bool _init(int argc, char **argv)
     // load font
     _font = FC_CreateFont();
     FC_LoadFont(_font, _rend, "fonts/static/NotoSans-Regular.ttf", 24, FC_MakeColor(255, 255, 255, 255), TTF_STYLE_NORMAL); 
-    mtnlogMessageTag(LOG_INFO, "init", "Loaded font");
+    mtnlogMessageTag(MTNLOG_INFO, "init", "Loaded font");
 
     // start time increment task
     int incTaskCode = pthread_create(&_incTimeThread, NULL, _timeIncrementTask, NULL);
     if (incTaskCode != 0) {
-        mtnlogMessageTag(LOG_ERROR, "init", "Failed to create time increment thread (error %d)", incTaskCode);
+        mtnlogMessageTag(MTNLOG_ERROR, "init", "Failed to create time increment thread (error %d)", incTaskCode);
         return false;
     }
 
@@ -124,12 +124,12 @@ static void _handleEvents(void)
         switch (ev.type) {
         case SDL_KEYDOWN:
             if (ev.key.keysym.sym == SDLK_ESCAPE) {
-                mtnlogMessageTag(LOG_INFO, "event", "Pressed escape, exiting");
+                mtnlogMessageTag(MTNLOG_INFO, "event", "Pressed escape, exiting");
                 _running = false;
             }
             break;
         case SDL_QUIT:
-            mtnlogMessageTag(LOG_INFO, "event", "Quit event, exiting");
+            mtnlogMessageTag(MTNLOG_INFO, "event", "Quit event, exiting");
             _running = false;
             break;
         case SDL_MOUSEMOTION:
@@ -151,7 +151,7 @@ static void _handleEvents(void)
                             int cellY = j * CELL_SIZE + _boardY;
                             bool hovering = (_mouseX > cellX && _mouseY > cellY && _mouseX < cellX + CELL_SIZE && _mouseY < cellY + CELL_SIZE);
                             if (hovering) {
-                                mtnlogMessageTag(LOG_INFO, "event", "Clicked on cell (%d,%d)", i, j);
+                                mtnlogMessageTag(MTNLOG_INFO, "event", "Clicked on cell (%d,%d)", i, j);
                                 CellState oldState = boardGetCell(&_board, i, j);
 
                                 Uint8 button = ev.button.button;
@@ -178,10 +178,10 @@ static void _handleEvents(void)
                                 }
 
                                 if (didMove && boardIsSolved(&_board)) {
-                                    mtnlogMessageTag(LOG_INFO, "event", "Board is solved");
+                                    mtnlogMessageTag(MTNLOG_INFO, "event", "Board is solved");
                                     _boardSolved = true;
                                     _incTime = false;
-                                    mtnlogMessageTag(LOG_INFO, "event", "Solve time: %d ms (%.2f s)", _time, (float)_time / 1000);
+                                    mtnlogMessageTag(MTNLOG_INFO, "event", "Solve time: %d ms (%.2f s)", _time, (float)_time / 1000);
                                 }
                             }
                         }
@@ -297,22 +297,22 @@ static void _render(void)
 
 static void _cleanup(void)
 {
-    mtnlogMessageTag(LOG_INFO, "cleanup", "Destroying board");
+    mtnlogMessageTag(MTNLOG_INFO, "cleanup", "Destroying board");
     boardDestroy(&_board);
     boardMetaDestroy(&_boardMeta);
     hintsDestroy(&_hints);
 
-    mtnlogMessageTag(LOG_INFO, "cleanup", "Doing args cleanup");
+    mtnlogMessageTag(MTNLOG_INFO, "cleanup", "Doing args cleanup");
     argsCleanup();
 
-    mtnlogMessageTag(LOG_INFO, "cleanup", "Stopping threads");
+    mtnlogMessageTag(MTNLOG_INFO, "cleanup", "Stopping threads");
     _incTaskRunning = false;
     pthread_join(_incTimeThread, NULL);
 
-    mtnlogMessageTag(LOG_INFO, "cleanup", "Unloading fonts");
+    mtnlogMessageTag(MTNLOG_INFO, "cleanup", "Unloading fonts");
     FC_FreeFont(_font);
 
-    mtnlogMessageTag(LOG_INFO, "cleanup", "SDL cleanup");
+    mtnlogMessageTag(MTNLOG_INFO, "cleanup", "SDL cleanup");
     SDL_DestroyRenderer(_rend);
     SDL_DestroyWindow(_window);
     SDL_Quit();

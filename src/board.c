@@ -11,26 +11,26 @@ void boardCreate(Board *board, int size)
     board->size = size;
     board->cells = (CellState *)malloc(sizeof(CellState) * size * size);
     if (!board->cells) {
-        mtnlogMessageTag(LOG_ERROR, "board", "Failed to allocate memory for board cells");
+        mtnlogMessageTag(MTNLOG_ERROR, "board", "Failed to allocate memory for board cells");
         return;
     }
     
     for (int i = 0; i < size * size; i++) {
         board->cells[i] = CellState_Empty;
     }
-    mtnlogMessageTag(LOG_INFO, "board", "Created board with size of %d", size);
+    mtnlogMessageTag(MTNLOG_INFO, "board", "Created board with size of %d", size);
 }
 
 void boardLoad(Board *board, BoardMetadata *boardMeta, const char *name)
 {
-    mtnlogMessageTag(LOG_INFO, "board", "Loading board from '%s'", name);
+    mtnlogMessageTag(MTNLOG_INFO, "board", "Loading board from '%s'", name);
     boardLoadMeta(boardMeta, &board->size, name);
     boardLoadSolution(board, name);
     boardCreate(board, board->size);
 }
 
 void boardLoadMeta(BoardMetadata *meta, int *size, const char *name) {
-    mtnlogMessageTag(LOG_INFO, "board", "Loading board metadata from '%s'", name);
+    mtnlogMessageTag(MTNLOG_INFO, "board", "Loading board metadata from '%s'", name);
 
     char *line = NULL;
     FILE *fp;
@@ -39,7 +39,7 @@ void boardLoadMeta(BoardMetadata *meta, int *size, const char *name) {
 
     fp = fopen(name, "r");
     if (!fp) {
-        mtnlogMessageTag(LOG_ERROR, "board", "Failed to open board file '%s': %s", name, strerror(errno));
+        mtnlogMessageTag(MTNLOG_ERROR, "board", "Failed to open board file '%s': %s", name, strerror(errno));
         return;
     }
 
@@ -47,10 +47,10 @@ void boardLoadMeta(BoardMetadata *meta, int *size, const char *name) {
         if (strncmp(line, "nm ", 3) == 0) {
             // name
             line[read - 1] = '\0'; // remove newline
-            mtnlogMessageTag(LOG_INFO, "board", "Found name: '%s'", line + 3);
+            mtnlogMessageTag(MTNLOG_INFO, "board", "Found name: '%s'", line + 3);
             meta->name = strdup(line + 3);
             if (!meta->name) {
-                mtnlogMessageTag(LOG_ERROR, "board", "Failed to allocate buffer for board name");
+                mtnlogMessageTag(MTNLOG_ERROR, "board", "Failed to allocate buffer for board name");
                 return;
             }
             continue;
@@ -59,10 +59,10 @@ void boardLoadMeta(BoardMetadata *meta, int *size, const char *name) {
         if (strncmp(line, "au ", 3) == 0) {
             // author
             line[read - 1] = '\0'; // remove newline
-            mtnlogMessageTag(LOG_INFO, "board", "Found author: '%s'", line + 3);
+            mtnlogMessageTag(MTNLOG_INFO, "board", "Found author: '%s'", line + 3);
             meta->author = strdup(line + 3);
             if (!meta->author) {
-                mtnlogMessageTag(LOG_ERROR, "board", "Failed to allocate buffer for board author");
+                mtnlogMessageTag(MTNLOG_ERROR, "board", "Failed to allocate buffer for board author");
                 return;
             }
             continue;
@@ -71,17 +71,17 @@ void boardLoadMeta(BoardMetadata *meta, int *size, const char *name) {
         if (strncmp(line, "sz ", 3) == 0) {
             // board size
             line[read - 1] = '\0'; // remove newline
-            mtnlogMessageTag(LOG_INFO, "board", "Found size: '%s'", line + 3);
+            mtnlogMessageTag(MTNLOG_INFO, "board", "Found size: '%s'", line + 3);
             *size = atoi(line + 3);
             continue;
         }
 
         if (strcmp(line, "s\n") == 0) {
-            mtnlogMessageTag(LOG_INFO, "board", "Solution section found, stopping finding meta");
+            mtnlogMessageTag(MTNLOG_INFO, "board", "Solution section found, stopping finding meta");
             break;
         }
 
-        mtnlogMessageTag(LOG_WARNING, "board", "Invalid metadata in '%s': %s", name, line);
+        mtnlogMessageTag(MTNLOG_WARNING, "board", "Invalid metadata in '%s': %s", name, line);
     }
 
     free(line);
@@ -90,16 +90,16 @@ void boardLoadMeta(BoardMetadata *meta, int *size, const char *name) {
 
 void boardLoadSolution(Board *board, const char *name)
 {
-    mtnlogMessageTag(LOG_INFO, "board", "Loading solution from file '%s'", name);
+    mtnlogMessageTag(MTNLOG_INFO, "board", "Loading solution from file '%s'", name);
     board->solved = (CellState *)malloc(sizeof(CellState) * board->size * board->size);
     if (!board->solved) {
-        mtnlogMessageTag(LOG_ERROR, "board", "Failed to allocate solution buffer");
+        mtnlogMessageTag(MTNLOG_ERROR, "board", "Failed to allocate solution buffer");
         return;
     }
 
     FILE *fp = fopen(name, "r");
     if (!fp) {
-        mtnlogMessageTag(LOG_ERROR, "board", "Failed to open file '%s': %s", name, strerror(errno));
+        mtnlogMessageTag(MTNLOG_ERROR, "board", "Failed to open file '%s': %s", name, strerror(errno));
         return;
     }
     char *line = NULL;
@@ -109,7 +109,7 @@ void boardLoadSolution(Board *board, const char *name)
     int i = 0;
     while ((read = getline(&line, &len, fp)) != -1) {
         if (strcmp(line, "s\n") == 0) {
-            mtnlogMessageTag(LOG_INFO, "board", "Found solution section. Starting getting solution.");
+            mtnlogMessageTag(MTNLOG_INFO, "board", "Found solution section. Starting getting solution.");
             doRead = true;
             continue;
         }
@@ -126,7 +126,7 @@ void boardLoadSolution(Board *board, const char *name)
                     st = CellState_Empty;
                     break;
                 default:
-                    mtnlogMessageTag(LOG_WARNING, "board", "Found unknown cell char '%c' in file '%s', assuming empty", ch, name);
+                    mtnlogMessageTag(MTNLOG_WARNING, "board", "Found unknown cell char '%c' in file '%s', assuming empty", ch, name);
                     st = CellState_Empty;
                     break;
                 }

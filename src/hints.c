@@ -5,7 +5,7 @@
 bool hintsCreate(BoardHints *hints, int boardSize)
 {
     if (boardSize <= 0) {
-        mtnlogMessageTag(LOG_ERROR, "hints", "Invalid board size %d", boardSize);
+        mtnlogMessageTag(MTNLOG_ERROR, "hints", "Invalid board size %d", boardSize);
         return false;
     }
 
@@ -15,7 +15,7 @@ bool hintsCreate(BoardHints *hints, int boardSize)
     hints->cols = (int **)malloc(boardSize * sizeof(int *));
 
     if (!hints->rows || !hints->cols) {
-        mtnlogMessageTag(LOG_ERROR, "hints", "Failed to create board hints");
+        mtnlogMessageTag(MTNLOG_ERROR, "hints", "Failed to create board hints");
         return false;
     }
 
@@ -23,12 +23,12 @@ bool hintsCreate(BoardHints *hints, int boardSize)
         hints->rows[i] = (int *)malloc(MAX_HINTS(boardSize) * sizeof(int));
         hints->cols[i] = (int *)malloc(MAX_HINTS(boardSize) * sizeof(int));
         if (!hints->rows[i] || !hints->cols[i]) {
-            mtnlogMessageTag(LOG_ERROR, "hints", "Failed to create board hints");
+            mtnlogMessageTag(MTNLOG_ERROR, "hints", "Failed to create board hints");
             return false;
         }
     }
 
-    mtnlogMessageTag(LOG_INFO, "hints", "Created hints for board of size %d", boardSize);
+    mtnlogMessageTag(MTNLOG_INFO, "hints", "Created hints for board of size %d", boardSize);
     return true;
 }
 

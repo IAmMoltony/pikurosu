@@ -3,6 +3,7 @@
 #include "board.h"
 #include "hints.h"
 #include "args.h"
+#include "util.h"
 #include "SDL_FontCache.h"
 #include <SDL2/SDL.h>
 #include <stdbool.h>
@@ -38,7 +39,7 @@ static void *_timeIncrementTask(void *arg)
     while (true) {
         if (_incTime)
             _time++;
-        usleep(1000);
+        sleepMs(1);
         if (!_incTaskRunning)
             break;
     }

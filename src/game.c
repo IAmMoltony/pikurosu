@@ -4,6 +4,7 @@
 #include "hints.h"
 #include "args.h"
 #include "util.h"
+#include "version.h"
 #include "SDL_FontCache.h"
 #include <SDL2/SDL.h>
 #include <stdbool.h>
@@ -100,6 +101,7 @@ static bool _init(int argc, char **argv)
 
     mtnlogInit(MTNLOG_INFO, "pikurosu.log");
     mtnlogColor(true);
+    mtnlogMessage(MTNLOG_INFO, "Pikurosu %d.%d.%d, build on " __DATE__ " " __TIME__, PIKUROSU_MAJOR, PIKUROSU_MINOR, PIKUROSU_PATCH);
 
     if (!_sdlInit() || !_createWindow() || !_createRenderer())
         return false;

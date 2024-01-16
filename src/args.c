@@ -10,7 +10,7 @@ static char *_levelName = NULL;
 ArgParseResult argsParse(int argc, char **argv)
 {
     for (int i = 1; i < argc; i++) {
-        char *arg = argv[i];
+        const char *arg = argv[i];
         if (strcmp(arg, "--help") == 0) {
             // help command
             printf("Pikurosu - a Picross/Nonogram implementation\nUsage: %s [options]\n", argv[0]);

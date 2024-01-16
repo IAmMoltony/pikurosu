@@ -3,8 +3,15 @@
 #include <errno.h>
 #include <time.h>
 
+#ifdef WIN32
+#include <windows.h>
+#endif
+
 void sleepMs(int ms)
 {
+#ifdef WIN32
+    Sleep(ms);
+#else
     // Code stolen from https://stackoverflow.com/questions/1157209/is-there-an-alternative-sleep-function-in-c-to-milliseconds
     struct timespec ts;
     int res;
@@ -18,4 +25,5 @@ void sleepMs(int ms)
     do {
         res = nanosleep(&ts, &ts);
     } while (res && errno == EINTR);
+#endif
 }

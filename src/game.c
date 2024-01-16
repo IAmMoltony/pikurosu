@@ -46,12 +46,17 @@ static void *_timeIncrementTask(void *arg)
     return NULL;
 }
 
+static void _setBoardPos(void)
+{
+    _boardX = _screenWidth / 2 - (_board.size * CELL_SIZE / 2);
+    _boardY = _screenHeight / 2 - (_board.size * CELL_SIZE / 2);
+}
+
 static void _loadBoard(const char *name)
 {
     boardLoad(&_board, &_boardMeta, name);
     hintsCreate(&_hints, _board.size);
-    _boardX = _screenWidth / 2 - (_board.size * CELL_SIZE / 2);
-    _boardY = _screenHeight / 2 - (_board.size * CELL_SIZE / 2);
+    _setBoardPos();
 }
 
 static bool _sdlInit(void)
@@ -66,7 +71,7 @@ static bool _sdlInit(void)
 
 static bool _createWindow(void)
 {
-    _window = SDL_CreateWindow("Pikurosu", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, _screenWidth, _screenHeight, 0);
+    _window = SDL_CreateWindow("Pikurosu", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, _screenWidth, _screenHeight, SDL_WINDOW_RESIZABLE);
     if (!_window) {
         mtnlogMessageTag(MTNLOG_ERROR, "init", "Failed to create window: %s", SDL_GetError());
         return false;
@@ -119,10 +124,19 @@ static bool _init(int argc, char **argv)
 
 static void _handleEvents(void)
 {
-
     SDL_Event ev;
     while (SDL_PollEvent(&ev)) {
         switch (ev.type) {
+        case SDL_WINDOWEVENT:
+            if (ev.window.event == SDL_WINDOWEVENT_RESIZED) {
+                _screenWidth = ev.window.data1;
+                _screenHeight = ev.window.data2;
+                if (_gState == GameState_Game) {
+                    _setBoardPos();
+                }
+                mtnlogMessageTag(MTNLOG_INFO, "event", "Resizing window to %dx%d", _screenWidth, _screenHeight);
+            }
+            break;
         case SDL_KEYDOWN:
             if (ev.key.keysym.sym == SDLK_ESCAPE) {
                 mtnlogMessageTag(MTNLOG_INFO, "event", "Pressed escape, exiting");
@@ -138,7 +152,7 @@ static void _handleEvents(void)
             _mouseY = ev.motion.y;
             break;
         case SDL_MOUSEBUTTONDOWN:
-             _mouseX = ev.button.x;
+            _mouseX = ev.button.x;
             _mouseY = ev.button.y;
 
             switch (_gState) {

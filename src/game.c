@@ -124,88 +124,113 @@ static bool _init(int argc, char **argv)
     return true;
 }
 
+static void _onWindowEvent(SDL_Event ev)
+{
+    if (ev.window.event == SDL_WINDOWEVENT_RESIZED) {
+        _screenWidth = ev.window.data1;
+        _screenHeight = ev.window.data2;
+        if (_gState == GameState_Game) {
+            _setBoardPos();
+        }
+        mtnlogMessageTag(MTNLOG_INFO, "event", "Resizing window to %dx%d", _screenWidth, _screenHeight);
+    }
+}
+
+static void _onKeyDown(SDL_Event ev)
+{
+     if (ev.key.keysym.sym == SDLK_ESCAPE) {
+         mtnlogMessageTag(MTNLOG_INFO, "event", "Pressed escape, exiting");
+         _running = false;
+     }
+}
+
+static void _onQuitEvent(SDL_Event ev)
+{
+    mtnlogMessageTag(MTNLOG_INFO, "event", "Quit event after %d ticks, exiting", ev.quit.timestamp);
+    _running = false;
+}
+
+static void _onMouseMotion(SDL_Event ev)
+{
+    _mouseX = ev.motion.x;
+    _mouseY = ev.motion.y;
+}
+
+static void _onMouseDown(SDL_Event ev)
+{
+    _mouseX = ev.button.x;
+    _mouseY = ev.button.y;
+
+    switch (_gState) {
+    case GameState_Game:
+        if (ev.button.button == SDL_BUTTON_LEFT || ev.button.button == SDL_BUTTON_RIGHT) {
+            if (_boardSolved)
+                break; // can't interact with board after solved
+            for (int i = 0; i < _board.size; i++) {
+                for (int j = 0; j < _board.size; j++) {
+                    int cellX = i * CELL_SIZE + _boardX;
+                    int cellY = j * CELL_SIZE + _boardY;
+                    bool hovering = (_mouseX > cellX && _mouseY > cellY && _mouseX < cellX + CELL_SIZE && _mouseY < cellY + CELL_SIZE);
+                    if (hovering) {
+                        mtnlogMessageTag(MTNLOG_INFO, "event", "Clicked on cell (%d,%d)", i, j);
+                        CellState oldState = boardGetCell(&_board, i, j);
+
+                        Uint8 button = ev.button.button;
+                        bool didMove = false;
+                        switch (button) {
+                        case SDL_BUTTON_LEFT:
+                            if (oldState == CellState_Filled) {
+                                boardSetCell(&_board, i, j, CellState_Empty);
+                                didMove = true;
+                            } else if (oldState == CellState_Empty) {
+                                boardSetCell(&_board, i, j, CellState_Filled);
+                                didMove = true;
+                            }
+                            break;
+                        case SDL_BUTTON_RIGHT:
+                            if (oldState == CellState_Cross) {
+                                boardSetCell(&_board, i, j, CellState_Empty);
+                                didMove = true;
+                            } else if (oldState == CellState_Empty) {
+                                boardSetCell(&_board, i, j, CellState_Cross);
+                                didMove = true;
+                            }
+                            break;
+                        }
+
+                        if (didMove && boardIsSolved(&_board)) {
+                            mtnlogMessageTag(MTNLOG_INFO, "event", "Board is solved");
+                            _boardSolved = true;
+                            _incTime = false;
+                            mtnlogMessageTag(MTNLOG_INFO, "event", "Solve time: %d ms (%.2f s)", _time, (float)_time / 1000);
+                        }
+                    }
+                }
+            }
+        }
+        break;
+    }
+}
+
 static void _handleEvents(void)
 {
     SDL_Event ev;
     while (SDL_PollEvent(&ev)) {
         switch (ev.type) {
         case SDL_WINDOWEVENT:
-            if (ev.window.event == SDL_WINDOWEVENT_RESIZED) {
-                _screenWidth = ev.window.data1;
-                _screenHeight = ev.window.data2;
-                if (_gState == GameState_Game) {
-                    _setBoardPos();
-                }
-                mtnlogMessageTag(MTNLOG_INFO, "event", "Resizing window to %dx%d", _screenWidth, _screenHeight);
-            }
+            _onWindowEvent(ev);
             break;
         case SDL_KEYDOWN:
-            if (ev.key.keysym.sym == SDLK_ESCAPE) {
-                mtnlogMessageTag(MTNLOG_INFO, "event", "Pressed escape, exiting");
-                _running = false;
-            }
+            _onKeyDown(ev);
             break;
         case SDL_QUIT:
-            mtnlogMessageTag(MTNLOG_INFO, "event", "Quit event, exiting");
-            _running = false;
+            _onQuitEvent(ev);
             break;
         case SDL_MOUSEMOTION:
-            _mouseX = ev.motion.x;
-            _mouseY = ev.motion.y;
+            _onMouseMotion(ev);
             break;
         case SDL_MOUSEBUTTONDOWN:
-            _mouseX = ev.button.x;
-            _mouseY = ev.button.y;
-
-            switch (_gState) {
-            case GameState_Game:
-                if (ev.button.button == SDL_BUTTON_LEFT || ev.button.button == SDL_BUTTON_RIGHT) {
-                    if (_boardSolved)
-                        break; // can't interact with board after solved
-                    for (int i = 0; i < _board.size; i++) {
-                        for (int j = 0; j < _board.size; j++) {
-                            int cellX = i * CELL_SIZE + _boardX;
-                            int cellY = j * CELL_SIZE + _boardY;
-                            bool hovering = (_mouseX > cellX && _mouseY > cellY && _mouseX < cellX + CELL_SIZE && _mouseY < cellY + CELL_SIZE);
-                            if (hovering) {
-                                mtnlogMessageTag(MTNLOG_INFO, "event", "Clicked on cell (%d,%d)", i, j);
-                                CellState oldState = boardGetCell(&_board, i, j);
-
-                                Uint8 button = ev.button.button;
-                                bool didMove = false;
-                                switch (button) {
-                                case SDL_BUTTON_LEFT:
-                                    if (oldState == CellState_Filled) {
-                                        boardSetCell(&_board, i, j, CellState_Empty);
-                                        didMove = true;
-                                    } else if (oldState == CellState_Empty) {
-                                        boardSetCell(&_board, i, j, CellState_Filled);
-                                        didMove = true;
-                                    }
-                                    break;
-                                case SDL_BUTTON_RIGHT:
-                                    if (oldState == CellState_Cross) {
-                                        boardSetCell(&_board, i, j, CellState_Empty);
-                                        didMove = true;
-                                    } else if (oldState == CellState_Empty) {
-                                        boardSetCell(&_board, i, j, CellState_Cross);
-                                        didMove = true;
-                                    }
-                                    break;
-                                }
-
-                                if (didMove && boardIsSolved(&_board)) {
-                                    mtnlogMessageTag(MTNLOG_INFO, "event", "Board is solved");
-                                    _boardSolved = true;
-                                    _incTime = false;
-                                    mtnlogMessageTag(MTNLOG_INFO, "event", "Solve time: %d ms (%.2f s)", _time, (float)_time / 1000);
-                                }
-                            }
-                        }
-                    }
-                }
-                break;
-            }
+            _onMouseDown(ev);
             break;
         }
     }
@@ -274,11 +299,14 @@ static void _renderTimeText(void)
 {
     SDL_Color color;
     color.a = 255;
+
     if (_boardSolved) {
+        // set color to green if solved
         color.r = 0;
         color.g = 210;
         color.b = 0;
     } else {
+        // set color to white if not solved
         color.r = 255;
         color.g = 255;
         color.b = 255;
@@ -314,21 +342,26 @@ static void _render(void)
 
 static void _cleanup(void)
 {
+    // destroy board, its metadata and hints
     mtnlogMessageTag(MTNLOG_INFO, "cleanup", "Destroying board");
     boardDestroy(&_board);
     boardMetaDestroy(&_boardMeta);
     hintsDestroy(&_hints);
 
+    // do some args cleanup
     mtnlogMessageTag(MTNLOG_INFO, "cleanup", "Doing args cleanup");
     argsCleanup();
 
+    // stop threads
     mtnlogMessageTag(MTNLOG_INFO, "cleanup", "Stopping threads");
     _incTaskRunning = false;
     pthread_join(_incTimeThread, NULL);
 
+    // unload fonts
     mtnlogMessageTag(MTNLOG_INFO, "cleanup", "Unloading fonts");
     FC_FreeFont(_font);
 
+    // destroy SDL stuff
     mtnlogMessageTag(MTNLOG_INFO, "cleanup", "SDL cleanup");
     SDL_DestroyRenderer(_rend);
     SDL_DestroyWindow(_window);

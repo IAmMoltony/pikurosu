@@ -10,6 +10,8 @@
 #include <stdbool.h>
 #include <unistd.h>
 #include <pthread.h>
+#include <dirent.h>
+#include <errno.h>
 
 #define CELL_SIZE 32
 
@@ -18,7 +20,7 @@ static SDL_Renderer *_rend = NULL;
 static bool _running = true;
 static int _mouseX = 0;
 static int _mouseY = 0;
-static GameState _gState = GameState_Game;
+static GameState _gState = GameState_LevelSelect;
 static FC_Font *_font;
 static int _screenWidth = 0;
 static int _screenHeight = 0;
@@ -33,6 +35,9 @@ static int _time = 0;
 static bool _incTime = true;
 static pthread_t _incTimeThread;
 static bool _incTaskRunning = true;
+static char **_levelList = NULL;
+static int _numLevels = 0;
+static int _selectedLevel = 0;
 
 static void *_timeIncrementTask(void *arg)
 {
@@ -91,6 +96,56 @@ static bool _createRenderer(void)
     return true;
 }
 
+static bool _findLevels(void)
+{
+    if (_levelList) {
+        for (int i = 0; i < _numLevels; i++)
+            free(_levelList[i]);
+        free(_levelList);
+    }
+    _levelList = (char **)malloc(5 * sizeof(char *));
+    if (!_levelList) {
+        mtnlogMessageTag(MTNLOG_ERROR, "findlevels", "Failed to allocate level list");
+        return false;
+    }
+
+    DIR *d = opendir("./levels");
+    if (d) {
+        struct dirent *de;
+        while ((de = readdir(d)) != NULL) {
+            if (strcmp(".", de->d_name) == 0 || strcmp("..", de->d_name) == 0) {
+                continue;
+            }
+
+            if (de->d_type == DT_REG) {
+                mtnlogMessageTag(MTNLOG_INFO, "findlevels", "Found regular file '%s'", de->d_name);
+                int nameStrLen = strlen(de->d_name);
+                char *nameStr = (char *)malloc(nameStrLen + 1);
+                if (!nameStr) {
+                    mtnlogMessageTag(MTNLOG_ERROR, "findlevels", "Failed to allocate nameStr for %s", de->d_name);
+                    return false;
+                }
+                sprintf(nameStr, "%s", de->d_name);
+                _numLevels++;
+                _levelList = (char **)realloc(_levelList, _numLevels * sizeof(char *));
+                if (!_levelList) {
+                    mtnlogMessageTag(MTNLOG_ERROR, "findlevels", "Failed to realloc level list");
+                    return false;
+                }
+                _levelList[_numLevels - 1] = nameStr;
+            }
+        }
+        closedir(d);
+        for (int i = 0; i < _numLevels; i++) {
+            mtnlogMessageTag(MTNLOG_INFO, "findlevels", "%s", _levelList[i]);
+        }
+        return true;
+    } else {
+        mtnlogMessageTag(MTNLOG_ERROR, "findlevels", "Failed to open levels dir: %s", strerror(errno));
+        return false;
+    }
+}
+
 static bool _init(int argc, char **argv)
 {
     if (argsParse(argc, argv) != ArgParseResult_OK)
@@ -106,13 +161,16 @@ static bool _init(int argc, char **argv)
     if (!_sdlInit() || !_createWindow() || !_createRenderer())
         return false;
 
-    // init board
-    _loadBoard(argsGetLevelName());
-
     // load font
     _font = FC_CreateFont();
     FC_LoadFont(_font, _rend, "fonts/static/NotoSans-Regular.ttf", 24, FC_MakeColor(255, 255, 255, 255), TTF_STYLE_NORMAL); 
+    FC_SetFilterMode(_font, FC_FILTER_LINEAR); // filtering
     mtnlogMessageTag(MTNLOG_INFO, "init", "Loaded font");
+
+    // find levels
+    if (!_findLevels()) {
+        return false;
+    }
 
     // start time increment task
     int incTaskCode = pthread_create(&_incTimeThread, NULL, _timeIncrementTask, NULL);
@@ -141,6 +199,26 @@ static void _onKeyDown(SDL_Event ev)
      if (ev.key.keysym.sym == SDLK_ESCAPE) {
          mtnlogMessageTag(MTNLOG_INFO, "event", "Pressed escape, exiting");
          _running = false;
+     }
+
+     if (_gState == GameState_LevelSelect) {
+        if (ev.key.keysym.sym == SDLK_UP) {
+            if (_selectedLevel > 0) {
+                _selectedLevel--;
+            }
+        } else if (ev.key.keysym.sym == SDLK_DOWN) {
+            if (_selectedLevel < _numLevels - 1) {
+                _selectedLevel++;
+            }
+        }
+
+        if (ev.key.keysym.sym == SDLK_SPACE || ev.key.keysym.sym == SDLK_RETURN) {
+            int levelNameLen = strlen(_levelList[_selectedLevel] + strlen("levels/"));
+            char *levelName = (char *)malloc(levelNameLen * sizeof(char));
+            sprintf(levelName, "levels/%s", _levelList[_selectedLevel]);
+            _loadBoard(levelName);
+            _gState = GameState_Game;
+        }
      }
 }
 
@@ -208,6 +286,8 @@ static void _onMouseDown(SDL_Event ev)
                 }
             }
         }
+        break;
+    default:
         break;
     }
 }
@@ -322,6 +402,41 @@ static void _renderBoardMeta(void)
     FC_DrawScale(_font, _rend, 10, _screenHeight - 22, scale, "%s by %s", _boardMeta.name, _boardMeta.author);
 }
 
+static void _renderLevelSelectHeading(void)
+{
+    SDL_Color headingColor;
+    headingColor.r = 255;
+    headingColor.g = 255;
+    headingColor.b = 255;
+    headingColor.a = 255;
+    FC_DrawColor(_font, _rend, 10, 10, headingColor, "Select a level");
+}
+
+static void _renderLevelList(void)
+{
+    FC_Scale scale;
+
+    scale.x = 0.75f;
+    scale.y = 0.75f;
+
+    for (int i = 0; i < _numLevels; i++) {
+        FC_Effect eff;
+        SDL_Color color;
+        color.a = 255;
+
+        if (_selectedLevel == i) {
+            color.r = 0;
+            color.g = 255;
+            color.b = 0;
+        } else {
+            color.r = color.g = color.b = 255;
+        }
+
+        eff = FC_MakeEffect(FC_ALIGN_LEFT, scale, color);
+        FC_DrawEffect(_font, _rend, 14, 40 + 23 * i, eff, "%s", _levelList[i]);
+    }
+}
+
 static void _render(void)
 {
     // clear screen
@@ -334,6 +449,10 @@ static void _render(void)
         _renderTimeText();
         _renderBoardMeta();
         break;
+    case GameState_LevelSelect:
+        _renderLevelSelectHeading();
+        _renderLevelList();
+        break;
     }
 
     // put stuff to screen
@@ -342,6 +461,11 @@ static void _render(void)
 
 static void _cleanup(void)
 {
+    // free level list
+    mtnlogMessageTag(MTNLOG_INFO, "cleanup", "Freeing level list");
+    for (int i = 0; i < _numLevels; i++)
+        free(_levelList[i]);
+
     // destroy board, its metadata and hints
     mtnlogMessageTag(MTNLOG_INFO, "cleanup", "Destroying board");
     boardDestroy(&_board);

@@ -5,7 +5,6 @@
 
 static int _screenWidth = 800;
 static int _screenHeight = 600;
-static char *_levelName = NULL;
 
 ArgParseResult argsParse(int argc, char **argv)
 {
@@ -26,21 +25,11 @@ ArgParseResult argsParse(int argc, char **argv)
         } else if (strcmp(arg, "--scrHeight") == 0) {
             // screen height
             _screenHeight = atoi(argv[i + 1]);
-        } else if (strcmp(arg, "--level") == 0) {
-            // level name
-            _levelName = (char *)malloc((strlen(argv[i + 1]) + 1) * sizeof(char));
-            if (!_levelName) {
-                fprintf(stderr, "Failed to allocate buffer for level name\n");
-                return ArgParseResult_AllocationError;
-            }
-            strcpy(_levelName, argv[i + 1]);
+        } else {
+            // idk
+            printf("Unknown arg `%s'\n", arg);
+            return ArgParseResult_InvalidArgument;
         }
-    }
-
-    // validate args
-    if (_levelName == NULL) {
-        fprintf(stderr, "Please specify a level name\nRun '%s --help' for more information\n", argv[0]);
-        return ArgParseResult_InvalidArgument;
     }
 
     return ArgParseResult_OK;
@@ -56,12 +45,7 @@ int argsGetScreenHeight(void)
     return _screenHeight;
 }
 
-char *argsGetLevelName(void)
-{
-    return _levelName;
-}
-
 void argsCleanup(void)
 {
-    free(_levelName);
+    // (stub)
 }

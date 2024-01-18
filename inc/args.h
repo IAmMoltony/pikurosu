@@ -12,7 +12,6 @@ typedef enum e_argpres {
 ArgParseResult argsParse(int argc, char **argv);
 int argsGetScreenWidth(void);
 int argsGetScreenHeight(void);
-char *argsGetLevelName(void);
 void argsCleanup(void);
 
 #endif

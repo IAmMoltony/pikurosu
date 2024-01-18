@@ -184,6 +184,8 @@ static bool _init(int argc, char **argv)
         mtnlogMessageTag(MTNLOG_ERROR, "init", "Failed to create time increment thread (error %d)", incTaskCode);
         return false;
     }
+    
+    mtnlogMessageTag(MTNLOG_INFO, "init", "Done");
 
     return true;
 }

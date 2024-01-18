@@ -161,6 +161,12 @@ static bool _init(int argc, char **argv)
     if (!_sdlInit() || !_createWindow() || !_createRenderer())
         return false;
 
+    // fullscreen
+    if (argsGetFullscreen())
+        if (SDL_SetWindowFullscreen(_window, SDL_WINDOW_FULLSCREEN_DESKTOP) != 0) {
+            mtnlogMessageTag(MTNLOG_ERROR, "init", "Failed to set fullscreen: %s", SDL_GetError());
+        }
+
     // load font
     _font = FC_CreateFont();
     FC_LoadFont(_font, _rend, "fonts/static/NotoSans-Regular.ttf", 24, FC_MakeColor(255, 255, 255, 255), TTF_STYLE_NORMAL); 

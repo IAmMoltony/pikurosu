@@ -2,6 +2,7 @@
 #include <unistd.h>
 #include <errno.h>
 #include <time.h>
+#include <ctype.h>
 
 #ifdef WIN32
 #include <windows.h>
@@ -26,4 +27,12 @@ void sleepMs(int ms)
         res = nanosleep(&ts, &ts);
     } while (res && errno == EINTR);
 #endif
+}
+
+bool isNumberStr(const char *str)
+{
+    for (int i = 0; str[i]; i++)
+        if (!isdigit(str[i]))
+            return false;
+    return true;
 }

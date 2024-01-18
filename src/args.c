@@ -1,10 +1,12 @@
 #include "args.h"
+#include "util.h"
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
 
 static int _screenWidth = 800;
 static int _screenHeight = 600;
+static bool _fullscreen = false;
 
 ArgParseResult argsParse(int argc, char **argv)
 {
@@ -20,15 +22,22 @@ ArgParseResult argsParse(int argc, char **argv)
             return ArgParseResult_HelpCommand;
         } else if (strcmp(arg, "--scrWidth") == 0) {
             // screen width
-            // TODO add checking args
-            _screenWidth = atoi(argv[i + 1]);
+            char *sws = argv[i + 1];
+            if (!isNumberStr(sws)) {
+                printf("Invalid screen width\n");
+                return ArgParseResult_InvalidArgument;
+            }
+            _screenWidth = atoi(sws);
         } else if (strcmp(arg, "--scrHeight") == 0) {
             // screen height
-            _screenHeight = atoi(argv[i + 1]);
-        } else {
-            // idk
-            printf("Unknown arg `%s'\n", arg);
-            return ArgParseResult_InvalidArgument;
+            char *shs = argv[i + 1];
+            if (!isNumberStr(shs)) {
+                printf("Invalid screen height\n");
+                return ArgParseResult_InvalidArgument;
+            }
+            _screenHeight = atoi(shs);
+        } else if (strcmp(arg, "--fullscreen") == 0) {
+            _fullscreen = true;
         }
     }
 
@@ -43,6 +52,11 @@ int argsGetScreenWidth(void)
 int argsGetScreenHeight(void)
 {
     return _screenHeight;
+}
+
+bool argsGetFullscreen(void)
+{
+    return _fullscreen;
 }
 
 void argsCleanup(void)

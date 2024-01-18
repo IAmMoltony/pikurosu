@@ -195,9 +195,11 @@ static void _onWindowEvent(SDL_Event ev)
     if (ev.window.event == SDL_WINDOWEVENT_RESIZED) {
         _screenWidth = ev.window.data1;
         _screenHeight = ev.window.data2;
+
         if (_gState == GameState_Game) {
             _setBoardPos();
         }
+
         mtnlogMessageTag(MTNLOG_INFO, "event", "Resizing window to %dx%d", _screenWidth, _screenHeight);
     }
 }
@@ -445,6 +447,22 @@ static void _renderLevelList(void)
     }
 }
 
+static void _renderLevelSelectTooltips(void)
+{
+    FC_Effect eff;
+    FC_Scale scale;
+    SDL_Color color;
+    color.r = 190;
+    color.g = 190;
+    color.b = 190;
+    color.a = 255;
+    scale.x = 0.5f;
+    scale.y = 0.5f;
+    eff = FC_MakeEffect(FC_ALIGN_LEFT, scale, color);
+    FC_DrawEffect(_font, _rend, 10, _screenHeight - 34, eff, "Arrows: select level");
+    FC_DrawEffect(_font, _rend, 10, _screenHeight - 22, eff, "Space or Enter: play level");
+}
+
 static void _render(void)
 {
     // clear screen
@@ -459,6 +477,7 @@ static void _render(void)
         break;
     case GameState_LevelSelect:
         _renderLevelSelectHeading();
+        _renderLevelSelectTooltips();
         _renderLevelList();
         break;
     }

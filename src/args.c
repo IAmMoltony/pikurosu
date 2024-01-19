@@ -18,7 +18,7 @@ ArgParseResult argsParse(int argc, char **argv)
             printf("\nValid options are:\n");
             printf(" --scrWidth [screen width] - set window width\n");
             printf(" --scrHeight [screen height] - set window height\n");
-            printf(" --level [level] - what level to load\n");
+            printf(" --fullscreen - enable fullscreen");
             return ArgParseResult_HelpCommand;
         } else if (strcmp(arg, "--scrWidth") == 0) {
             // screen width

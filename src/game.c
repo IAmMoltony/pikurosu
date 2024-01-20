@@ -186,6 +186,7 @@ static bool _init(int argc, char **argv)
     if (!_findLevels()) {
         return false;
     }
+    mtnlogMessageTag(MTNLOG_INFO, "init", "Found levels");
 
     // start time increment task
     int incTaskCode = pthread_create(&_incTimeThread, NULL, _timeIncrementTask, NULL);

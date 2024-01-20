@@ -18,6 +18,7 @@
 static SDL_Window *_window = NULL;
 static SDL_Renderer *_rend = NULL;
 static bool _running = true;
+static bool _isFullscreen = false;
 static int _mouseX = 0;
 static int _mouseY = 0;
 static GameState _gState = GameState_LevelSelect;
@@ -156,6 +157,7 @@ static void _toggleFullscreen(bool enable)
     if (c != 0) {
         mtnlogMessageTag(MTNLOG_ERROR, "init", "Failed to set fullscreen: %s", SDL_GetError());
     }
+    _isFullscreen = enable;
 }
 
 static bool _init(int argc, char **argv)
@@ -239,6 +241,10 @@ static void _onKeyDown(SDL_Event ev)
             _loadBoard(levelName);
             _gState = GameState_Game;
         }
+     }
+
+     if (ev.key.keysym.sym == SDLK_F11) {
+         _toggleFullscreen(!_isFullscreen);
      }
 }
 

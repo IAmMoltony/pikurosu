@@ -146,6 +146,18 @@ static bool _findLevels(void)
     }
 }
 
+static void _toggleFullscreen(bool enable)
+{
+    int c;
+    if (enable)
+        c = SDL_SetWindowFullscreen(_window, SDL_WINDOW_FULLSCREEN_DESKTOP);
+    else
+        c = SDL_SetWindowFullscreen(_window, 0);
+    if (c != 0) {
+        mtnlogMessageTag(MTNLOG_ERROR, "init", "Failed to set fullscreen: %s", SDL_GetError());
+    }
+}
+
 static bool _init(int argc, char **argv)
 {
     if (argsParse(argc, argv) != ArgParseResult_OK)
@@ -162,10 +174,7 @@ static bool _init(int argc, char **argv)
         return false;
 
     // fullscreen
-    if (argsGetFullscreen())
-        if (SDL_SetWindowFullscreen(_window, SDL_WINDOW_FULLSCREEN_DESKTOP) != 0) {
-            mtnlogMessageTag(MTNLOG_ERROR, "init", "Failed to set fullscreen: %s", SDL_GetError());
-        }
+    _toggleFullscreen(argsGetFullscreen());
 
     // load font
     _font = FC_CreateFont();
